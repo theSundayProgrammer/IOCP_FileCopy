@@ -11,6 +11,7 @@
 typedef DWORD(WINAPI threadproc)(void*);
 const int	MAX_THREADS = 2;
 const DWORD BUFFSIZE = (8 * 1024);  // The size of an I/O buffer
+const ULONG MAX_PENDING_TASKS = 100;
 // roundup 
 // returns  min{k: k >= Value && k%Multiple == 0}
 template<typename T, typename S>
@@ -56,10 +57,14 @@ void __stdcall ReadComplete(DWORD nCompleted, OVERLAPPED* pov)
 	CWriteReq* pwr = new CWriteReq(pior->DetachBuffer(), pior->m_nBuffSize, pior->m_hFileDst);
 	pwr->Write(pov->Offset, pov->OffsetHigh);
 	delete pior;
-	::InterlockedDecrement(&pendingTasks);
-
 }
 
+void __stdcall WriteComplete(DWORD nCompleted, OVERLAPPED* pov)
+{
+	CWriteReq* pior = (CWriteReq*)pov;
+	delete pior;
+	::InterlockedDecrement(&pendingTasks);
+}
 
 int _tmain(int argc, _TCHAR* argv[])
 {
@@ -118,7 +123,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		CThreadPool iocp;
 		iocp.Begin(MAX_THREADS);
 		iocp.AssociateHandle(hfileSrc, ReadComplete);
-		iocp.AssociateHandle(hfileDst, CWriteReq::WriteComplete);
+		iocp.AssociateHandle(hfileDst, WriteComplete);
 
 		//launch read operations for each block
 		//CReadReq::ReadComplete launches a write
@@ -127,7 +132,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			InterlockedIncrement(&pendingTasks);
 			CReadReq* reqRead = new CReadReq(hfileSrc, hfileDst, pos, BUFFSIZE);
 			reqRead->Read();
-			while (pendingTasks > 10) Sleep(0);
+			while (pendingTasks > MAX_PENDING_TASKS) Sleep(0);
 		}
 	}
 	{

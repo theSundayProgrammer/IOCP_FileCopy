@@ -11,7 +11,7 @@ public:
 
 	BOOL Write( DWORD off, DWORD offHi);
 
-	static void __stdcall WriteComplete(DWORD nCompleted, OVERLAPPED* pov);
+
 
 private:	
 	PVOID  m_pvData;

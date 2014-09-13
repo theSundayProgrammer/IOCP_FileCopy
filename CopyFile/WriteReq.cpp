@@ -23,8 +23,3 @@ BOOL CWriteReq::Write( DWORD off, DWORD offHi)
 	return(::WriteFile(m_hFileDst, m_pvData, m_nBuffSize, NULL, this));
 }
 
-void __stdcall CWriteReq::WriteComplete(DWORD nCompleted, OVERLAPPED* pov)
-{
-   CWriteReq* pior=(CWriteReq*)pov;
-   delete pior;  
-}
