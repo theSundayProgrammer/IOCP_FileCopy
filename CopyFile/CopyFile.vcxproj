@@ -151,6 +151,7 @@
   <ItemGroup>
     <ClCompile Include="CopyFile.cpp" />
     <ClCompile Include="ReadReq.cpp" />
+    <ClCompile Include="ReadWriteReq.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="ThreadPool.cpp" />
     <ClCompile Include="WriteReq.cpp" />

@@ -19,7 +19,7 @@ T roundup(T Value, S Multiple)
 {
 	T retVal = (Value / Multiple) * Multiple;
 	//Invariant retVal % Multiple == 0 
-	while (retVal < Value)
+	while (retVal < Value) 
 		retVal += Multiple;
 	return retVal;
 }

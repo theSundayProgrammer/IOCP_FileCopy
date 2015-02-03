@@ -3,7 +3,7 @@
 
 #include <windows.h>
 #include <process.h>
-class CReadReq : public OVERLAPPED 
+class CReadReq : public OVERLAPPED
 {
 public:
 	CReadReq(HANDLE sourceFile, HANDLE destFile, LONGLONG pos, DWORD bufferSize);
@@ -12,12 +12,42 @@ public:
 
 
 	PVOID					DetachBuffer();
-							
+
 	BOOL					Read();
-							
+
 	DWORD					EndofFile();
 
+
+
+private:
+	BOOL AllocBuffer(DWORD nBuffSize);
+
+
+public:
+	LARGE_INTEGER	m_liNextReadOffset;
+	LARGE_INTEGER	m_liFileSizeSrc;
+	HANDLE			m_hFileSrc;
+	HANDLE			m_hFileDst;
+	DWORD			m_nBuffSize;
+	PVOID			m_pvData;
+};
+class CReadWriteReq : public OVERLAPPED
+{
+public:
+	CReadWriteReq(HANDLE sourceFile, HANDLE destFile, LONGLONG pos, DWORD bufferSize);
+
+	~CReadWriteReq();
+
+
 	
+
+	BOOL					Read();
+
+	BOOL				    Write();
+
+	DWORD					EndofFile();
+
+
 
 private:
 	BOOL AllocBuffer(DWORD nBuffSize);
